@@ -7,29 +7,56 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 30px;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
     }
-    .question-box {
+    .question {
       margin-bottom: 20px;
+      padding: 10px;
+      border-left: 5px solid #007BFF;
+      background: #f9f9f9;
+      border-radius: 5px;
     }
-    .timer {
-      font-weight: bold;
-      color: red;
+    .question h3 {
+      margin: 0 0 10px;
     }
     .option {
-      margin: 8px 0;
       display: block;
+      margin: 6px 0;
     }
     .feedback {
       font-weight: bold;
-      margin-top: 10px;
+      margin-top: 5px;
     }
-    .result-box {
+    .correct {
+      color: green;
+      animation: pop 0.3s ease-in-out;
+    }
+    .incorrect {
+      color: red;
+      animation: shake 0.3s ease-in-out;
+    }
+    @keyframes shake {
+      0% { transform: translateX(0px); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0px); }
+    }
+    @keyframes pop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    #result {
       margin-top: 30px;
+      font-size: 1.2em;
+      font-weight: bold;
     }
     button {
-      padding: 10px 20px;
       margin-top: 20px;
+      padding: 10px 20px;
       cursor: pointer;
     }
   </style>
@@ -37,124 +64,81 @@
 <body>
 
   <h1>Year 7 Quiz</h1>
-  <div id="quiz-container">
-    <div id="timer" class="timer"></div>
-    <div id="question" class="question-box"></div>
-    <div id="options"></div>
-    <div id="feedback" class="feedback"></div>
-    <button id="next-btn" onclick="nextQuestion()" style="display:none;">Next</button>
-  </div>
-  
-  <div id="result" class="result-box"></div>
+  <form id="quizForm">
+    <div id="quizContainer"></div>
+    <button type="button" onclick="submitQuiz()">Submit</button>
+  </form>
+  <div id="result"></div>
 
   <script>
-    const quiz = [
-      // Maths
-      { q: "What is the square root of 81?", options: ["9", "8", "7", "6"], answer: "9" },
-      { q: "Solve: 5 × (3 + 2)", options: ["25", "20", "15", "30"], answer: "25" },
-      { q: "What is 1/2 + 1/4?", options: ["3/4", "1", "2/3", "5/8"], answer: "3/4" },
-      { q: "What is 30% of 200?", options: ["60", "30", "20", "90"], answer: "60" },
+    const questions = [
+      { q: "What is 7 × 6?", options: ["42", "36", "48", "54"], answer: "42" },
+      { q: "Synonym of 'happy'?", options: ["Sad", "Joyful", "Angry", "Tired"], answer: "Joyful" },
+      { q: "What is H₂O?", options: ["Oxygen", "Hydrogen", "Water", "Salt"], answer: "Water" },
+      { q: "Which continent is Australia in?", options: ["Asia", "Africa", "Australia", "Europe"], answer: "Australia" },
+      { q: "🌍 What is the capital of France?", options: ["Berlin", "Madrid", "Paris", "Rome"], answer: "Paris" }, // GK
 
-      // General Knowledge
-      { q: "How many continents are there?", options: ["5", "6", "7", "8"], answer: "7" },
+      { q: "What is 15 ÷ 3?", options: ["3", "4", "5", "6"], answer: "5" },
+      { q: "Which is a noun?", options: ["Run", "Quickly", "Happiness", "Beautiful"], answer: "Happiness" },
+      { q: "Red planet?", options: ["Earth", "Mars", "Venus", "Jupiter"], answer: "Mars" },
+      { q: "First US President?", options: ["Washington", "Lincoln", "Jefferson", "Adams"], answer: "Washington" },
+      { q: "🐱 How many continents are there?", options: ["5", "6", "7", "8"], answer: "7" }, // GK
 
-      // English
-      { q: "Choose the correct sentence:", options: ["Their going home", "They’re going home", "There going home", "They is going home"], answer: "They’re going home" },
-      { q: "What is a synonym for 'brave'?", options: ["Cowardly", "Timid", "Fearless", "Shy"], answer: "Fearless" },
-      { q: "What type of word is 'quickly'?", options: ["Noun", "Verb", "Adverb", "Adjective"], answer: "Adverb" },
-      { q: "Which is a metaphor?", options: ["As fast as a cheetah", "The classroom was a zoo", "Like a lion", "Loud like thunder"], answer: "The classroom was a zoo" },
+      { q: "√64?", options: ["6", "7", "8", "9"], answer: "8" },
+      { q: "Which is an adjective?", options: ["Run", "Quickly", "Happy", "Beautiful"], answer: "Beautiful" },
+      { q: "Gas plants absorb?", options: ["Oxygen", "CO2", "Hydrogen", "Helium"], answer: "CO2" },
+      { q: "Ocean west of USA?", options: ["Atlantic", "Pacific", "Indian", "Arctic"], answer: "Pacific" },
+      { q: "📚 Who wrote Harry Potter?", options: ["Tolkien", "Rowling", "Collins", "Riordan"], answer: "Rowling" }, // GK
 
-      // General Knowledge
-      { q: "Which animal is known as the 'King of the Jungle'?", options: ["Tiger", "Elephant", "Lion", "Cheetah"], answer: "Lion" },
-
-      // Science
-      { q: "Which organ pumps blood?", options: ["Liver", "Brain", "Heart", "Lungs"], answer: "Heart" },
-      { q: "What is H2O?", options: ["Oxygen", "Hydrogen", "Water", "Salt"], answer: "Water" },
-      { q: "Which force pulls objects toward Earth?", options: ["Magnetism", "Gravity", "Friction", "Energy"], answer: "Gravity" },
-      { q: "Which gas do humans need to breathe?", options: ["Nitrogen", "Carbon Dioxide", "Oxygen", "Helium"], answer: "Oxygen" },
-
-      // General Knowledge
-      { q: "What is the capital city of France?", options: ["Paris", "Berlin", "Rome", "Madrid"], answer: "Paris" },
-
-      // Geography / History
-      { q: "Which ocean is west of the UK?", options: ["Atlantic", "Indian", "Arctic", "Pacific"], answer: "Atlantic" },
-      { q: "Who was the first Tudor King?", options: ["Henry VIII", "Henry VII", "Edward VI", "James I"], answer: "Henry VII" },
-      { q: "Which country is famous for the Great Wall?", options: ["India", "China", "Egypt", "Japan"], answer: "China" },
-      { q: "What is the capital of Scotland?", options: ["Glasgow", "Cardiff", "Edinburgh", "Aberdeen"], answer: "Edinburgh" },
-
-      // General Knowledge
-      { q: "How many legs does a spider have?", options: ["6", "8", "10", "12"], answer: "8" },
+      { q: "9 × 8?", options: ["72", "64", "56", "48"], answer: "72" },
+      { q: "Which is a verb?", options: ["Run", "Quickly", "Happiness", "Beautiful"], answer: "Run" },
+      { q: "Symbol for gold?", options: ["Au", "Ag", "Fe", "Pb"], answer: "Au" },
+      { q: "Capital of Scotland?", options: ["Glasgow", "Cardiff", "Edinburgh", "Aberdeen"], answer: "Edinburgh" },
+      { q: "🚀 Largest planet?", options: ["Earth", "Mars", "Jupiter", "Saturn"], answer: "Jupiter" } // GK
     ];
 
-    let currentQuestion = 0;
-    let correctAnswers = 0;
-    let timer;
-    let timeLeft = 45;
+    const quizContainer = document.getElementById("quizContainer");
 
-    function startTimer() {
-      timeLeft = 45;
-      document.getElementById("timer").textContent = `Time Left: ${timeLeft} seconds`;
-      timer = setInterval(() => {
-        timeLeft--;
-        document.getElementById("timer").textContent = `Time Left: ${timeLeft} seconds`;
-        if (timeLeft <= 0) {
-          clearInterval(timer);
-          showFeedback(null);
-        }
-      }, 1000);
-    }
-
-    function loadQuestion() {
-      const q = quiz[currentQuestion];
-      document.getElementById("feedback").innerHTML = "";
-      document.getElementById("next-btn").style.display = "none";
-      document.getElementById("question").innerHTML = `<strong>Q${currentQuestion + 1}:</strong> ${q.q}`;
-      document.getElementById("options").innerHTML = q.options.map(opt => 
-        `<label class="option"><input type="radio" name="option" value="${opt}"> ${opt}</label>`
-      ).join("");
-      startTimer();
-    }
-
-    function showFeedback(selectedValue) {
-      clearInterval(timer);
-      const correct = quiz[currentQuestion].answer;
-      const feedback = document.getElementById("feedback");
-      if (selectedValue === correct) {
-        feedback.innerHTML = "✅ Correct!";
-        correctAnswers++;
-      } else if (selectedValue === null) {
-        feedback.innerHTML = `⏰ Time's up! Correct answer: ${correct}`;
-      } else {
-        feedback.innerHTML = `❌ Incorrect! Correct answer: ${correct}`;
-      }
-      document.getElementById("next-btn").style.display = "inline-block";
-    }
-
-    document.getElementById("options").addEventListener("change", function(e) {
-      const selected = document.querySelector('input[name="option"]:checked').value;
-      showFeedback(selected);
+    questions.forEach((item, index) => {
+      const div = document.createElement("div");
+      div.className = "question";
+      div.innerHTML = `
+        <h3>Q${index + 1}: ${item.q}</h3>
+        ${item.options.map(opt =>
+          `<label class="option"><input type="radio" name="q${index}" value="${opt}"> ${opt}</label>`
+        ).join("")}
+        <div id="feedback${index}" class="feedback"></div>
+      `;
+      quizContainer.appendChild(div);
     });
 
-    function nextQuestion() {
-      currentQuestion++;
-      if (currentQuestion < quiz.length) {
-        loadQuestion();
-      } else {
-        showResult();
-      }
-    }
+    function submitQuiz() {
+      let score = 0;
+      questions.forEach((item, index) => {
+        const radios = document.getElementsByName(`q${index}`);
+        let selected = null;
+        radios.forEach(radio => {
+          if (radio.checked) selected = radio.value;
+        });
 
-    function showResult() {
-      document.getElementById("quiz-container").style.display = "none";
+        const feedbackDiv = document.getElementById(`feedback${index}`);
+        if (selected === item.answer) {
+          feedbackDiv.textContent = "✅ Correct!";
+          feedbackDiv.className = "feedback correct";
+          score++;
+        } else {
+          feedbackDiv.textContent = `❌ Incorrect! Correct answer: ${item.answer}`;
+          feedbackDiv.className = "feedback incorrect";
+        }
+      });
+
+      const percentage = Math.round((score / questions.length) * 100);
       document.getElementById("result").innerHTML = `
-        <h2>Quiz Complete!</h2>
-        <p>You got ${correctAnswers} out of ${quiz.length} correct.</p>
-        <p>Percentage: ${Math.round((correctAnswers / quiz.length) * 100)}%</p>
+        <hr>
+        <p>You scored ${score} out of ${questions.length}.</p>
+        <p>Percentage: ${percentage}%</p>
       `;
     }
-
-    // Start quiz
-    loadQuestion();
   </script>
 </body>
 </html>
