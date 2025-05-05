@@ -3,24 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>7th Standard Quiz</title>
+  <title>7th Standard Quiz - Set 2</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
-      background-color: #f4f8fb;
+      background-color: #e8f5e9;
     }
     .question {
       margin-bottom: 20px;
-      padding: 10px;
+      padding: 15px;
       border-radius: 10px;
-      box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+      background-color: #ffffff;
     }
     .question:nth-child(even) {
-      background-color: #e3f2fd;
+      background-color: #e1f5fe;
     }
-    .question:nth-child(odd) {
-      background-color: #fff3e0;
+    .result-message {
+      font-weight: bold;
+      padding-top: 10px;
     }
     table {
       margin-top: 20px;
@@ -28,7 +30,7 @@
       border-collapse: collapse;
     }
     table, th, td {
-      border: 1px solid black;
+      border: 1px solid #4caf50;
     }
     th, td {
       padding: 10px;
@@ -37,7 +39,7 @@
     .submit-btn {
       margin-top: 20px;
       padding: 10px 15px;
-      background-color: #42a5f5;
+      background-color: #43a047;
       border: none;
       color: white;
       font-weight: bold;
@@ -45,72 +47,80 @@
       cursor: pointer;
     }
     .submit-btn:hover {
-      background-color: #1e88e5;
+      background-color: #2e7d32;
     }
   </style>
 </head>
 <body>
-  <h1>📚 7th Standard Mega Quiz 🎉</h1>
+  <h1>🧠 Curriculum Quiz for Year 7 🎯</h1>
   <form id="quizForm">
     <div id="quiz-container"></div>
-    <button type="button" onclick="submitQuiz()" class="submit-btn">✅ Submit</button>
-    <button type="reset" class="submit-btn" style="background-color:#ef5350;">🔄 Reset</button>
+    <button type="button" onclick="submitQuiz()" class="submit-btn">📊 Submit</button>
+    <button type="reset" class="submit-btn" style="background-color:#ef5350;">♻️ Reset</button>
   </form>
   <div id="result"></div>
 
   <script>
-    const subjects = {
-      "General Knowledge": [
-        ["📍 Where is Barham Park located?", ["Wembley", "Harrow", "Uxbridge", "Ealing"], "Wembley"],
-        ["🛤️ Which station is nearest to Sudbury Town?", ["Sudbury Hill", "Wembley Park", "Northwick Park", "Harrow-on-the-Hill"], "Sudbury Hill"],
-        ["🚌 Which bus goes to Northwick Park Hospital?", ["H9", "92", "204", "H10"], "H9"],
-        ["🏥 Where does Mum work?", ["Watford Hospital", "Asda", "Brent Council", "Sainsbury's"], "Watford Hospital"],
-        ["🏫 Which school do you attend?", ["Preston Park Primary", "Sudbury Primary", "Barham School", "Kingsbury Green"], "Preston Park Primary"],
-        ["🏥 Where is Northwick Park Hospital?", ["Harrow", "Wembley", "Watford", "Ruislip"], "Harrow"],
-        ["🌳 Which park is near Sudbury Town?", ["Barham Park", "Fryent Park", "Kenton Park", "Roe Green Park"], "Barham Park"],
-        ["🚑 What kind of place is Northwick Park?", ["Hospital", "Mall", "Museum", "School"], "Hospital"],
-        ["🧑‍⚕️ Where else does Mum work besides Watford?", ["Northwick Park", "Moorfields", "King’s College", "St. Mary’s"], "Northwick Park"],
-        ["🏞️ Barham Park is great for?", ["Picnics", "Shopping", "Swimming", "Bowling"], "Picnics"]
-      ]
-    };
+    const questions = [
+      ["🔢 What is the square root of 144?", ["11", "12", "14", "13"], "12"],
+      ["🌍 What is the capital of France?", ["Paris", "Berlin", "Madrid", "London"], "Paris"],
+      ["🧪 What gas do plants breathe in?", ["Oxygen", "Hydrogen", "Carbon Dioxide", "Nitrogen"], "Carbon Dioxide"],
+      ["🧁 Which bakery is near Barham Park?", ["Greggs", "Cake Box", "Subway", "Costa"], "Greggs"],
+      ["📏 1 meter is how many centimeters?", ["10", "100", "1000", "50"], "100"],
+      ["🧠 Which part of the body controls thinking?", ["Heart", "Liver", "Brain", "Lungs"], "Brain"],
+      ["📚 What is 5 x 5?", ["20", "25", "30", "15"], "25"],
+      ["🏥 Where does Mum sometimes work in Ruislip?", ["Ruislip Nursing Home", "Ruislip Bank", "Ruislip Cafe", "Ruislip College"], "Ruislip Nursing Home"],
+      ["🔤 Which one is a noun?", ["Run", "Blue", "Chair", "Quickly"], "Chair"],
+      ["🤣 What sound does a cow make?", ["Meow", "Moo", "Woof", "Quack"], "Moo"],
+      ["🔢 What is 7 + 8?", ["15", "14", "13", "16"], "15"],
+      ["🚂 Which train line stops at Wembley Central?", ["Bakerloo", "Piccadilly", "Central", "Metropolitan"], "Bakerloo"],
+      ["🔌 What is the shortcut to copy in computer?", ["Ctrl + V", "Ctrl + X", "Ctrl + C", "Ctrl + P"], "Ctrl + C"],
+      ["👩‍⚕️ Which hospital is in Harrow?", ["Northwick Park", "Hillingdon", "Watford", "Chelsea"], "Northwick Park"],
+      ["🔊 What does 'volume' control on YouTube?", ["Brightness", "Sound", "Comments", "Zoom"], "Sound"],
+      ["🍎 What is healthy food?", ["Chips", "Chocolate", "Apple", "Cake"], "Apple"],
+      ["🌦️ What comes from clouds?", ["Rain", "Dirt", "Smoke", "Grass"], "Rain"],
+      ["🏫 What is the colour of your school uniform?", ["Blue", "Grey", "Black", "White"], "Grey"],
+      ["💡 What is the opposite of 'off'?", ["Down", "On", "High", "Out"], "On"],
+      ["🤩 What is 10 x 10?", ["100", "10", "20", "50"], "100"]
+    ];
 
-    let questionCount = 0;
     const quizContainer = document.getElementById("quiz-container");
-    for (const subject in subjects) {
-      quizContainer.innerHTML += `<h2>📘 ${subject}</h2>`;
-      subjects[subject].forEach((q, i) => {
-        questionCount++;
-        let options = q[1].map(option => 
-          `<label><input type="radio" name="q${questionCount}" value="${option}"> ${option}</label>`
-        ).join("<br>");
-        quizContainer.innerHTML += `
-          <div class="question">
-            <p><strong>Q${questionCount}: ${q[0]}</strong></p>
-            ${options}
-          </div>
-        `;
-      });
-    }
+    questions.forEach((q, index) => {
+      let options = q[1].map(option => 
+        `<label><input type='radio' name='q${index}' value='${option}'> ${option}</label>`
+      ).join("<br>");
+      quizContainer.innerHTML += `
+        <div class='question' id='question${index}'>
+          <p><strong>Q${index + 1}: ${q[0]}</strong></p>
+          ${options}
+          <div class='result-message' id='result${index}'></div>
+        </div>
+      `;
+    });
 
     function submitQuiz() {
       let correct = 0;
       let wrong = 0;
-      let currentQ = 1;
-      for (const subject in subjects) {
-        subjects[subject].forEach(q => {
-          const radios = document.getElementsByName("q" + currentQ);
-          let selected = "";
-          radios.forEach(r => { if (r.checked) selected = r.value; });
-          if (selected === q[2]) correct++;
-          else wrong++;
-          currentQ++;
-        });
-      }
+      questions.forEach((q, index) => {
+        const radios = document.getElementsByName("q" + index);
+        let selected = "";
+        radios.forEach(r => { if (r.checked) selected = r.value; });
+        const resultDiv = document.getElementById("result" + index);
+        if (selected === q[2]) {
+          correct++;
+          resultDiv.innerText = "✅ Correct!";
+          resultDiv.style.color = "green";
+        } else {
+          wrong++;
+          resultDiv.innerHTML = `❌ Incorrect! Correct answer: <strong>${q[2]}</strong>`;
+          resultDiv.style.color = "red";
+        }
+      });
       const total = correct + wrong;
       const percent = Math.round((correct / total) * 100);
       document.getElementById("result").innerHTML = `
         <table>
-          <tr><th>Total Questions</th><th>Correct</th><th>Wrong</th><th>Percentage</th></tr>
+          <tr><th>Total</th><th>Correct</th><th>Wrong</th><th>Percentage</th></tr>
           <tr><td>${total}</td><td>${correct}</td><td>${wrong}</td><td>${percent}%</td></tr>
         </table>
       `;
