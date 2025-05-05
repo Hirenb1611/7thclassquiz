@@ -3,215 +3,124 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🔥 7th Standard Quiz Challenge 🔥</title>
+  <title>7th Standard Quiz - Set 2</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #e0f7fa;
-      margin: 0;
-      padding: 0;
-    }
-    .intro, .welcome-screen {
-      text-align: center;
-      padding: 40px;
-      background: linear-gradient(to right, #42a5f5, #478ed1);
-      color: white;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #e8f5e9;
     }
     .question {
-      background-color: #fffde7;
-      margin: 15px;
+      margin-bottom: 20px;
       padding: 15px;
       border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    .question:nth-child(odd) {
-      background-color: #ffe0b2;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+      background-color: #ffffff;
     }
     .question:nth-child(even) {
       background-color: #e1f5fe;
     }
-    .submit-btn {
-      margin: 20px 10px;
-      padding: 10px 20px;
-      font-size: 18px;
-      background-color: #66bb6a;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .submit-btn:hover {
-      background-color: #43a047;
-    }
-    #fireworks {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: rgba(0,0,0,0.9);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
-      color: white;
-      font-size: 3em;
-      flex-direction: column;
-      display: none;
-    }
-    #result {
-      padding: 20px;
-      display: none;
+    .result-message {
+      font-weight: bold;
+      padding-top: 10px;
     }
     table {
+      margin-top: 20px;
       width: 100%;
       border-collapse: collapse;
     }
     table, th, td {
-      border: 1px solid #333;
+      border: 1px solid #4caf50;
     }
     th, td {
       padding: 10px;
       text-align: center;
     }
-    .highlight {
-      border: 2px solid red;
-      background-color: #ffebee !important;
-    }
-    #startBtn {
-      padding: 15px 25px;
-      font-size: 20px;
-      background-color: #00bcd4;
-      color: white;
+    .submit-btn {
+      margin-top: 20px;
+      padding: 10px 15px;
+      background-color: #43a047;
       border: none;
-      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      border-radius: 5px;
       cursor: pointer;
     }
-    #quiz-container, form {
-      display: none;
+    .submit-btn:hover {
+      background-color: #2e7d32;
     }
   </style>
 </head>
 <body>
-  <div class="welcome-screen" id="welcomeScreen">
-    <h1>👋 Welcome to the Ultimate 7th Grade Quiz!</h1>
-    <p>Test your skills, have fun, and learn new things! 🧠🎉</p>
-    <button id="startBtn" onclick="startQuiz()">🚀 Start Quiz</button>
-  </div>
-
-  <div class="intro" id="quizIntro">
-    <h1>🎓 Welcome to the 7th Standard Quiz Mega Challenge 🎓</h1>
-    <p>Let's test your knowledge in fun and exciting ways!</p>
-  </div>
-
+  <h1>🧠 Curriculum Quiz for Year 7 🎯</h1>
   <form id="quizForm">
     <div id="quiz-container"></div>
-    <button type="button" onclick="submitQuiz()" class="submit-btn">🎯 Submit</button>
-    <button type="reset" class="submit-btn" style="background-color:#ef5350;">🔄 Reset</button>
+    <button type="button" onclick="submitQuiz()" class="submit-btn">📊 Submit</button>
+    <button type="reset" class="submit-btn" style="background-color:#ef5350;">♻️ Reset</button>
   </form>
-
-  <div id="fireworks">
-    🎆 BOOM! 🎆<br>
-    Great job!
-  </div>
-
   <div id="result"></div>
-
-  <audio id="cheerSound">
-    <source src="https://www.soundjay.com/human/cheering-01.mp3" type="audio/mpeg">
-  </audio>
-  <audio id="correctSound">
-    <source src="https://www.soundjay.com/button/beep-07.mp3" type="audio/mpeg">
-  </audio>
-  <audio id="incorrectSound">
-    <source src="https://www.soundjay.com/button/beep-05.mp3" type="audio/mpeg">
-  </audio>
 
   <script>
     const questions = [
-      ["🧮 What is 25 x 10?", ["50", "75", "100", "250"], "100"],
-      ["📏 How many millimeters in a meter?", ["100", "1000", "10", "500"], "1000"],
-      ["🇬🇧 What's the capital of the UK?", ["Manchester", "London", "Birmingham", "Liverpool"], "London"],
-      ["🏞️ Which park is in Wembley?", ["Hyde Park", "Barham Park", "Regents Park", "Greenwich Park"], "Barham Park"],
-      ["✍️ Who wrote 'Macbeth'?", ["Charles Dickens", "William Shakespeare", "Jane Austen", "Roald Dahl"], "William Shakespeare"],
-      ["💻 What does CPU stand for?", ["Central Performance Unit", "Computer Processing Unit", "Central Processing Unit", "Control Processor Unit"], "Central Processing Unit"],
-      ["🏥 Where does Mum work?", ["Northwick Park", "Ealing Hospital", "Brent Council", "Tesco"], "Northwick Park"],
-      ["😂 What's 2 + 2 (Funny Q)?", ["22", "2", "Fish", "4"], "4"],
-      ["🔢 What is the square root of 64?", ["6", "8", "10", "12"], "8"],
-      ["🚌 Which bus goes to Barham Park?", ["204", "H17", "182", "245"], "204"],
-      ["🎨 What color do you get mixing red and white?", ["Pink", "Purple", "Orange", "Grey"], "Pink"],
-      ["🏫 What is your school's name?", ["Preston Park Primary", "Sudbury High", "Park View", "Wembley Primary"], "Preston Park Primary"],
-      ["🤣 What color is an orange (Funny)?", ["Green", "Orange", "Blue", "Banana"], "Orange"],
-      ["🌍 What is the largest continent?", ["Europe", "Asia", "Africa", "Antarctica"], "Asia"],
-      ["📚 Who is the author of 'Harry Potter'?", ["Enid Blyton", "J.K. Rowling", "C.S. Lewis", "Roald Dahl"], "J.K. Rowling"],
-      ["🎥 What is YouTube mainly used for?", ["Shopping", "Video Sharing", "Cooking", "Gaming"], "Video Sharing"],
-      ["🏞️ Which town is next to Wembley?", ["Harrow", "Camden", "Croydon", "Barking"], "Harrow"],
-      ["🔢 What's 144 divided by 12?", ["11", "12", "13", "14"], "12"],
-      ["🧑‍⚕️ What does NHS stand for?", ["National Healthcare System", "National Health Service", "Nurses Helping Society", "New Hospital Sector"], "National Health Service"],
-      ["🐱 What sound does a cat make? (Funny)", ["Woof", "Quack", "Meow", "Moo"], "Meow"]
+      ["🔢 What is the square root of 144?", ["11", "12", "14", "13"], "12"],
+      ["🌍 What is the capital of France?", ["Paris", "Berlin", "Madrid", "London"], "Paris"],
+      ["🧪 What gas do plants breathe in?", ["Oxygen", "Hydrogen", "Carbon Dioxide", "Nitrogen"], "Carbon Dioxide"],
+      ["🧁 Which bakery is near Barham Park?", ["Greggs", "Cake Box", "Subway", "Costa"], "Greggs"],
+      ["📏 1 meter is how many centimeters?", ["10", "100", "1000", "50"], "100"],
+      ["🧠 Which part of the body controls thinking?", ["Heart", "Liver", "Brain", "Lungs"], "Brain"],
+      ["📚 What is 5 x 5?", ["20", "25", "30", "15"], "25"],
+      ["🏥 Where does Mum sometimes work in Ruislip?", ["Ruislip Nursing Home", "Ruislip Bank", "Ruislip Cafe", "Ruislip College"], "Ruislip Nursing Home"],
+      ["🔤 Which one is a noun?", ["Run", "Blue", "Chair", "Quickly"], "Chair"],
+      ["🤣 What sound does a cow make?", ["Meow", "Moo", "Woof", "Quack"], "Moo"],
+      ["🔢 What is 7 + 8?", ["15", "14", "13", "16"], "15"],
+      ["🚂 Which train line stops at Wembley Central?", ["Bakerloo", "Piccadilly", "Central", "Metropolitan"], "Bakerloo"],
+      ["🔌 What is the shortcut to copy in computer?", ["Ctrl + V", "Ctrl + X", "Ctrl + C", "Ctrl + P"], "Ctrl + C"],
+      ["👩‍⚕️ Which hospital is in Harrow?", ["Northwick Park", "Hillingdon", "Watford", "Chelsea"], "Northwick Park"],
+      ["🔊 What does 'volume' control on YouTube?", ["Brightness", "Sound", "Comments", "Zoom"], "Sound"],
+      ["🍎 What is healthy food?", ["Chips", "Chocolate", "Apple", "Cake"], "Apple"],
+      ["🌦️ What comes from clouds?", ["Rain", "Dirt", "Smoke", "Grass"], "Rain"],
+      ["🏫 What is the colour of your school uniform?", ["Blue", "Grey", "Black", "White"], "Grey"],
+      ["💡 What is the opposite of 'off'?", ["Down", "On", "High", "Out"], "On"],
+      ["🤩 What is 10 x 10?", ["100", "10", "20", "50"], "100"]
     ];
 
-    const container = document.getElementById("quiz-container");
-    const correctSound = document.getElementById("correctSound");
-    const incorrectSound = document.getElementById("incorrectSound");
-
+    const quizContainer = document.getElementById("quiz-container");
     questions.forEach((q, index) => {
-      const qHTML = `
-        <div class="question" id="question${index}">
+      let options = q[1].map(option => 
+        `<label><input type='radio' name='q${index}' value='${option}'> ${option}</label>`
+      ).join("<br>");
+      quizContainer.innerHTML += `
+        <div class='question' id='question${index}'>
           <p><strong>Q${index + 1}: ${q[0]}</strong></p>
-          ${q[1].map(opt => `<label><input type="radio" name="q${index}" value="${opt}" onclick="playSound(${index}, '${opt}')"> ${opt}</label><br>`).join('')}
-          <p id="feedback${index}"></p>
+          ${options}
+          <div class='result-message' id='result${index}'></div>
         </div>
       `;
-      container.innerHTML += qHTML;
     });
-
-    function startQuiz() {
-      document.getElementById("welcomeScreen").style.display = "none";
-      document.getElementById("quizIntro").style.display = "block";
-      document.getElementById("quizForm").style.display = "block";
-    }
-
-    function playSound(index, value) {
-      const isCorrect = value === questions[index][2];
-      if (isCorrect) correctSound.play();
-      else incorrectSound.play();
-    }
 
     function submitQuiz() {
       let correct = 0;
       let wrong = 0;
-      const cheer = document.getElementById("cheerSound");
-      for (let i = 0; i < questions.length; i++) {
-        const options = document.getElementsByName("q" + i);
+      questions.forEach((q, index) => {
+        const radios = document.getElementsByName("q" + index);
         let selected = "";
-        for (const o of options) {
-          if (o.checked) selected = o.value;
-        }
-        const feedback = document.getElementById("feedback" + i);
-        const qBlock = document.getElementById("question" + i);
-        if (selected === questions[i][2]) {
-          feedback.innerHTML = "✅ Correct";
-          qBlock.classList.remove("highlight");
+        radios.forEach(r => { if (r.checked) selected = r.value; });
+        const resultDiv = document.getElementById("result" + index);
+        if (selected === q[2]) {
           correct++;
+          resultDiv.innerText = "✅ Correct!";
+          resultDiv.style.color = "green";
         } else {
-          feedback.innerHTML = "❌ Incorrect";
-          qBlock.classList.add("highlight");
           wrong++;
+          resultDiv.innerHTML = `❌ Incorrect! Correct answer: <strong>${q[2]}</strong>`;
+          resultDiv.style.color = "red";
         }
-      }
-      document.getElementById("fireworks").style.display = "flex";
-      cheer.play();
-      setTimeout(() => {
-        document.getElementById("fireworks").style.display = "none";
-        document.getElementById("result").style.display = "block";
-      }, 4000);
+      });
       const total = correct + wrong;
       const percent = Math.round((correct / total) * 100);
       document.getElementById("result").innerHTML = `
-        <h2>🎓 Final Score</h2>
         <table>
-          <tr><th>Total</th><th>Correct</th><th>Wrong</th><th>%</th></tr>
+          <tr><th>Total</th><th>Correct</th><th>Wrong</th><th>Percentage</th></tr>
           <tr><td>${total}</td><td>${correct}</td><td>${wrong}</td><td>${percent}%</td></tr>
         </table>
       `;
