@@ -1,133 +1,134 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>7th Class Student Quiz - Preston Park Primary</title>
+  <title>7th Class Quiz - Preston Park Primary</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 15px; max-width: 800px; margin: auto; }
-    h2 { color: #2a4d69; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f4f8; margin: 0; padding: 0; }
+    .container { max-width: 900px; margin: auto; padding: 20px; }
+    .question { background: #fff; margin: 10px 0; padding: 15px; border-radius: 8px; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
+    .result { margin-top: 5px; font-weight: bold; }
     .correct { color: green; }
     .incorrect { color: red; }
-    table, th, td { border: 1px solid black; border-collapse: collapse; padding: 5px; }
-    #resultsTable { margin-top: 20px; display: none; }
-    input[type=button], input[type=reset] { margin: 10px 5px; padding: 10px 20px; }
-    #gradeMessage { margin-top: 20px; font-weight: bold; font-size: 1.2em; color: #2a4d69; }
+    #resultsTable { display: none; margin-top: 20px; border-collapse: collapse; width: 100%; }
+    #resultsTable th, #resultsTable td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    #resultsTable th { background-color: #4CAF50; color: white; }
+    .welcome-screen, .closing-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; color: white; justify-content: center; align-items: center; text-align: center; flex-direction: column; z-index: 1000; }
+    .visible { display: flex !important; }
+    .btn { padding: 10px 20px; font-size: 16px; margin-top: 20px; cursor: pointer; border: none; border-radius: 5px; background: #4CAF50; color: white; }
+    .emoji { font-size: 24px; }
   </style>
 </head>
 <body>
-  <h2>Quiz: 7th Class – Preston Park Primary School</h2>
-  <form id="quizForm">
+  <div class="welcome-screen visible" id="welcomeScreen">
+    <h1>🎉 Welcome to the Year 7 Quiz 🎉</h1>
+    <p>Let's challenge your knowledge while having fun! 😄</p>
+    <button class="btn" onclick="startQuiz()">Start Quiz</button>
+  </div>
 
-    <p>1. What is the capital of France?</p>
-    <input type="radio" name="q1" value="a"> Berlin<br>
-    <input type="radio" name="q1" value="b"> Paris<br>
-    <input type="radio" name="q1" value="c"> Madrid<br>
-    <div id="result1"></div>
+  <div class="closing-screen" id="closingScreen">
+    <h1>🎆 Well Done! 🎆</h1>
+    <p>Calculating your results... 🎓</p>
+  </div>
 
-    <p>2. What is 5 + 3?</p>
-    <input type="radio" name="q2" value="a"> 6<br>
-    <input type="radio" name="q2" value="b"> 8<br>
-    <input type="radio" name="q2" value="c"> 9<br>
-    <div id="result2"></div>
+  <div class="container" id="quizContainer" style="display:none">
+    <h2>7th Class Quiz – Preston Park Primary School</h2>
+    <form id="quizForm">
+      <div id="questions"></div>
+      <br>
+      <input class="btn" type="button" value="Submit" onclick="submitQuiz()">
+      <input class="btn" type="reset" value="Reset" onclick="resetQuiz()">
+    </form>
 
-    <p>3. Which planet is known as the Red Planet?</p>
-    <input type="radio" name="q3" value="a"> Earth<br>
-    <input type="radio" name="q3" value="b"> Venus<br>
-    <input type="radio" name="q3" value="c"> Mars<br>
-    <div id="result3"></div>
+    <table id="resultsTable">
+      <tr>
+        <th>Correct</th>
+        <th>Wrong</th>
+        <th>Percentage</th>
+      </tr>
+      <tr>
+        <td id="correctCount">0</td>
+        <td id="wrongCount">0</td>
+        <td id="percentage">0%</td>
+      </tr>
+    </table>
+  </div>
 
-    <p>4. Who wrote "Romeo and Juliet"?</p>
-    <input type="radio" name="q4" value="a"> Charles Dickens<br>
-    <input type="radio" name="q4" value="b"> J.K. Rowling<br>
-    <input type="radio" name="q4" value="c"> William Shakespeare<br>
-    <div id="result4"></div>
-
-    <p>5. What is the boiling point of water?</p>
-    <input type="radio" name="q5" value="a"> 100°C<br>
-    <input type="radio" name="q5" value="b"> 90°C<br>
-    <input type="radio" name="q5" value="c"> 80°C<br>
-    <div id="result5"></div>
-
-    <br>
-    <input type="button" value="Submit" onclick="checkAnswers()">
-    <input type="reset" value="Reset" onclick="resetQuiz()">
-  </form>
-
-  <table id="resultsTable">
-    <tr>
-      <th>Correct</th>
-      <th>Wrong</th>
-      <th>Percentage</th>
-    </tr>
-    <tr>
-      <td id="correctCount">0</td>
-      <td id="wrongCount">0</td>
-      <td id="percentage">0%</td>
-    </tr>
-  </table>
-
-  <div id="gradeMessage"></div>
+  <audio id="welcomeAudio" src="https://www.soundjay.com/buttons/sounds/button-09.mp3"></audio>
+  <audio id="submitAudio" src="https://www.soundjay.com/misc/sounds/bell-ringing-01.mp3"></audio>
 
   <script>
-    const answers = {
-      q1: 'b', // Paris
-      q2: 'b', // 8
-      q3: 'c', // Mars
-      q4: 'c', // Shakespeare
-      q5: 'a'  // 100°C
-    };
+    const questionsData = [
+      { q: "What is 12 x 12?", o: ["124", "144", "122", "132"], a: 1 },
+      { q: "What gas do plants need to make food?", o: ["Oxygen", "Carbon Dioxide", "Hydrogen", "Nitrogen"], a: 1 },
+      { q: "Who wrote 'Romeo and Juliet'?", o: ["Charles Dickens", "J.K. Rowling", "William Shakespeare", "Jane Austen"], a: 2 },
+      { q: "Which park is closest to Wembley Central?", o: ["Hyde Park", "Barham Park", "Greenwich Park", "Sudbury Green"], a: 1 },
+      { q: "What is the capital of France?", o: ["Rome", "Madrid", "Paris", "Berlin"], a: 2 },
+      { q: "Which hospital is near Watford?", o: ["Northwick Park", "Ruislip Nursing", "MHS Watford", "Hillingdon"], a: 2 },
+      { q: "What is H2O commonly known as?", o: ["Salt", "Water", "Oxygen", "Helium"], a: 1 },
+      { q: "Which one is an even number?", o: ["7", "9", "12", "13"], a: 2 },
+      { q: "What is the main ingredient in bread?", o: ["Milk", "Rice", "Flour", "Butter"], a: 2 },
+      { q: "Which school do you go to?", o: ["Oxford", "Cambridge", "Preston Park Primary", "St. Marys"], a: 2 },
+      { q: "🧠 What do we call the study of the past?", o: ["Biology", "History", "Science", "Maths"], a: 1 },
+      { q: "Which part of a computer shows visuals?", o: ["CPU", "Monitor", "Keyboard", "Mouse"], a: 1 },
+      { q: "What shape has 4 equal sides?", o: ["Triangle", "Rectangle", "Square", "Circle"], a: 2 },
+      { q: "Where is Sudbury Town located?", o: ["North London", "South London", "Near Wembley", "East London"], a: 2 },
+      { q: "🧪 What unit measures temperature?", o: ["Kilograms", "Celsius", "Watts", "Litres"], a: 1 },
+      { q: "💻 What platform is used for videos?", o: ["YouTube", "Google", "Zoom", "Docs"], a: 0 },
+      { q: "🎨 What do you call colors that are opposite on the color wheel?", o: ["Analogous", "Complementary", "Warm", "Cool"], a: 1 },
+      { q: "🚀 Which planet is known as the Red Planet?", o: ["Earth", "Venus", "Mars", "Jupiter"], a: 2 },
+      { q: "😂 What do you call a funny drawing?", o: ["Cartoon", "Map", "Painting", "Sketch"], a: 0 },
+      { q: "📚 What is a synonym for 'Happy'?", o: ["Sad", "Angry", "Joyful", "Tired"], a: 2 }
+    ];
 
-    function checkAnswers() {
-      let correct = 0;
-      let total = Object.keys(answers).length;
+    function startQuiz() {
+      document.getElementById('welcomeAudio').play();
+      document.getElementById('welcomeScreen').classList.remove('visible');
+      document.getElementById('quizContainer').style.display = 'block';
 
-      for (let i = 1; i <= total; i++) {
-        const q = "q" + i;
-        const selected = document.querySelector(`input[name="${q}"]:checked`);
-        const result = document.getElementById("result" + i);
+      const questionsDiv = document.getElementById('questions');
+      questionsData.forEach((q, index) => {
+        const html = `<div class='question'><strong>Q${index + 1}. ${q.q}</strong><br>` +
+          q.o.map((opt, i) =>
+            `<label><input type='radio' name='q${index + 1}' value='${i}'> ${opt}</label><br>`).join('') +
+          `<div class='result' id='result${index + 1}'></div></div>`;
+        questionsDiv.innerHTML += html;
+      });
+    }
 
-        if (!selected) {
-          result.textContent = "Please select an answer.";
-          result.className = "incorrect";
-        } else if (selected.value === answers[q]) {
-          result.textContent = "Correct!";
-          result.className = "correct";
-          correct++;
-        } else {
-          result.textContent = "Incorrect.";
-          result.className = "incorrect";
-        }
-      }
-
-      let wrong = total - correct;
-      let percent = ((correct / total) * 100).toFixed(2);
-
-      document.getElementById("correctCount").textContent = correct;
-      document.getElementById("wrongCount").textContent = wrong;
-      document.getElementById("percentage").textContent = percent + "%";
-      document.getElementById("resultsTable").style.display = "table";
-
-      const gradeMessage = document.getElementById("gradeMessage");
-      if (percent >= 90) {
-        gradeMessage.textContent = "Excellent!";
-      } else if (percent >= 80) {
-        gradeMessage.textContent = "Very Good!";
-      } else if (percent >= 70) {
-        gradeMessage.textContent = "Good.";
-      } else if (percent >= 60) {
-        gradeMessage.textContent = "Needs Improvement.";
-      } else {
-        gradeMessage.textContent = "Try Again.";
-      }
+    function submitQuiz() {
+      document.getElementById('submitAudio').play();
+      document.getElementById('closingScreen').classList.add('visible');
+      setTimeout(() => {
+        document.getElementById('closingScreen').classList.remove('visible');
+        let correct = 0;
+        questionsData.forEach((q, index) => {
+          const selected = document.querySelector(`input[name='q${index + 1}']:checked`);
+          const result = document.getElementById(`result${index + 1}`);
+          if (!selected) {
+            result.textContent = "Please choose an answer.";
+            result.className = "result incorrect";
+          } else if (parseInt(selected.value) === q.a) {
+            result.textContent = "Correct! ✅";
+            result.className = "result correct";
+            correct++;
+          } else {
+            result.textContent = "Incorrect ❌";
+            result.className = "result incorrect";
+          }
+        });
+        let wrong = questionsData.length - correct;
+        let percent = ((correct / questionsData.length) * 100).toFixed(2);
+        document.getElementById("correctCount").textContent = correct;
+        document.getElementById("wrongCount").textContent = wrong;
+        document.getElementById("percentage").textContent = percent + "%";
+        document.getElementById("resultsTable").style.display = "table";
+      }, 2000);
     }
 
     function resetQuiz() {
-      document.getElementById("resultsTable").style.display = "none";
-      document.getElementById("gradeMessage").textContent = "";
-      for (let i = 1; i <= Object.keys(answers).length; i++) {
-        document.getElementById("result" + i).textContent = "";
-      }
+      location.reload();
     }
   </script>
 </body>
