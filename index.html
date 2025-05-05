@@ -1,172 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Year 7 Animated Quiz</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>7th Standard Quiz</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
-      max-width: 800px;
-      margin: auto;
-      background: #f4f9ff;
+      background-color: #f4f8fb;
     }
     .question {
       margin-bottom: 20px;
-      padding: 15px;
-      background: #ffffff;
-      border-left: 5px solid #007BFF;
-      border-radius: 5px;
-      animation: fadeIn 0.8s ease-in;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
     }
-    .question.gk {
-      border-left-color: #28a745;
-      animation: zoomIn 0.6s ease-in-out;
+    .question:nth-child(even) {
+      background-color: #e3f2fd;
     }
-    .question h3 {
-      margin: 0 0 10px;
+    .question:nth-child(odd) {
+      background-color: #fff3e0;
     }
-    .option {
-      display: block;
-      margin: 6px 0;
-    }
-    .feedback {
-      font-weight: bold;
-      margin-top: 5px;
-    }
-    .correct {
-      color: green;
-      animation: pop 0.3s ease-in-out;
-    }
-    .incorrect {
-      color: red;
-      animation: shake 0.3s ease-in-out;
-    }
-    button {
+    table {
       margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 16px;
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid black;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+    .submit-btn {
+      margin-top: 20px;
+      padding: 10px 15px;
+      background-color: #42a5f5;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 5px;
       cursor: pointer;
     }
-    #result {
-      font-size: 1.2em;
-      margin-top: 30px;
-    }
-
-    /* Animations */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes pop {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); }
-    }
-
-    @keyframes shake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-4px); }
-      50% { transform: translateX(4px); }
-      75% { transform: translateX(-4px); }
-      100% { transform: translateX(0); }
-    }
-
-    @keyframes zoomIn {
-      from { transform: scale(0.9); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+    .submit-btn:hover {
+      background-color: #1e88e5;
     }
   </style>
 </head>
 <body>
-
-  <h1>🎉 Year 7 Quiz Challenge</h1>
+  <h1>📚 7th Standard Mega Quiz 🎉</h1>
   <form id="quizForm">
-    <div id="quizContainer"></div>
-    <button type="button" onclick="submitQuiz()">Submit</button>
+    <div id="quiz-container"></div>
+    <button type="button" onclick="submitQuiz()" class="submit-btn">✅ Submit</button>
+    <button type="reset" class="submit-btn" style="background-color:#ef5350;">🔄 Reset</button>
   </form>
   <div id="result"></div>
 
-  <!-- Sound Effects -->
-  <audio id="correctSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3" preload="auto"></audio>
-  <audio id="incorrectSound" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
-
   <script>
-    const questions = [
-      { q: "What is 7 × 6?", options: ["42", "36", "48", "54"], answer: "42" },
-      { q: "Synonym of 'happy'?", options: ["Sad", "Joyful", "Angry", "Tired"], answer: "Joyful" },
-      { q: "What is H₂O?", options: ["Oxygen", "Hydrogen", "Water", "Salt"], answer: "Water" },
-      { q: "Which continent is Australia in?", options: ["Asia", "Africa", "Australia", "Europe"], answer: "Australia" },
-      { q: "🌍 What is the capital of France?", options: ["Berlin", "Madrid", "Paris", "Rome"], answer: "Paris", gk: true },
+    const subjects = {
+      "General Knowledge": [
+        ["📍 Where is Barham Park located?", ["Wembley", "Harrow", "Uxbridge", "Ealing"], "Wembley"],
+        ["🛤️ Which station is nearest to Sudbury Town?", ["Sudbury Hill", "Wembley Park", "Northwick Park", "Harrow-on-the-Hill"], "Sudbury Hill"],
+        ["🚌 Which bus goes to Northwick Park Hospital?", ["H9", "92", "204", "H10"], "H9"],
+        ["🏥 Where does Mum work?", ["Watford Hospital", "Asda", "Brent Council", "Sainsbury's"], "Watford Hospital"],
+        ["🏫 Which school do you attend?", ["Preston Park Primary", "Sudbury Primary", "Barham School", "Kingsbury Green"], "Preston Park Primary"],
+        ["🏥 Where is Northwick Park Hospital?", ["Harrow", "Wembley", "Watford", "Ruislip"], "Harrow"],
+        ["🌳 Which park is near Sudbury Town?", ["Barham Park", "Fryent Park", "Kenton Park", "Roe Green Park"], "Barham Park"],
+        ["🚑 What kind of place is Northwick Park?", ["Hospital", "Mall", "Museum", "School"], "Hospital"],
+        ["🧑‍⚕️ Where else does Mum work besides Watford?", ["Northwick Park", "Moorfields", "King’s College", "St. Mary’s"], "Northwick Park"],
+        ["🏞️ Barham Park is great for?", ["Picnics", "Shopping", "Swimming", "Bowling"], "Picnics"]
+      ]
+    };
 
-      { q: "What is 15 ÷ 3?", options: ["3", "4", "5", "6"], answer: "5" },
-      { q: "Which is a noun?", options: ["Run", "Quickly", "Happiness", "Beautiful"], answer: "Happiness" },
-      { q: "Red planet?", options: ["Earth", "Mars", "Venus", "Jupiter"], answer: "Mars" },
-      { q: "First US President?", options: ["Washington", "Lincoln", "Jefferson", "Adams"], answer: "Washington" },
-      { q: "🐱 How many continents are there?", options: ["5", "6", "7", "8"], answer: "7", gk: true },
-
-      { q: "√64?", options: ["6", "7", "8", "9"], answer: "8" },
-      { q: "Which is an adjective?", options: ["Run", "Quickly", "Happy", "Beautiful"], answer: "Beautiful" },
-      { q: "Gas plants absorb?", options: ["Oxygen", "CO2", "Hydrogen", "Helium"], answer: "CO2" },
-      { q: "Ocean west of USA?", options: ["Atlantic", "Pacific", "Indian", "Arctic"], answer: "Pacific" },
-      { q: "📚 Who wrote Harry Potter?", options: ["Tolkien", "Rowling", "Collins", "Riordan"], answer: "Rowling", gk: true },
-
-      { q: "9 × 8?", options: ["72", "64", "56", "48"], answer: "72" },
-      { q: "Which is a verb?", options: ["Run", "Quickly", "Happiness", "Beautiful"], answer: "Run" },
-      { q: "Symbol for gold?", options: ["Au", "Ag", "Fe", "Pb"], answer: "Au" },
-      { q: "Capital of Scotland?", options: ["Glasgow", "Cardiff", "Edinburgh", "Aberdeen"], answer: "Edinburgh" },
-      { q: "🚀 Largest planet?", options: ["Earth", "Mars", "Jupiter", "Saturn"], answer: "Jupiter", gk: true }
-    ];
-
-    const quizContainer = document.getElementById("quizContainer");
-
-    questions.forEach((item, index) => {
-      const div = document.createElement("div");
-      div.className = "question" + (item.gk ? " gk" : "");
-      div.innerHTML = `
-        <h3>Q${index + 1}: ${item.q}</h3>
-        ${item.options.map(opt =>
-          `<label class="option"><input type="radio" name="q${index}" value="${opt}"> ${opt}</label>`
-        ).join("")}
-        <div id="feedback${index}" class="feedback"></div>
-      `;
-      quizContainer.appendChild(div);
-    });
-
-    function playSound(type) {
-      const sound = document.getElementById(type === "correct" ? "correctSound" : "incorrectSound");
-      if (sound) sound.play();
+    let questionCount = 0;
+    const quizContainer = document.getElementById("quiz-container");
+    for (const subject in subjects) {
+      quizContainer.innerHTML += `<h2>📘 ${subject}</h2>`;
+      subjects[subject].forEach((q, i) => {
+        questionCount++;
+        let options = q[1].map(option => 
+          `<label><input type="radio" name="q${questionCount}" value="${option}"> ${option}</label>`
+        ).join("<br>");
+        quizContainer.innerHTML += `
+          <div class="question">
+            <p><strong>Q${questionCount}: ${q[0]}</strong></p>
+            ${options}
+          </div>
+        `;
+      });
     }
 
     function submitQuiz() {
-      let score = 0;
-      questions.forEach((item, index) => {
-        const radios = document.getElementsByName(`q${index}`);
-        let selected = null;
-        radios.forEach(radio => {
-          if (radio.checked) selected = radio.value;
+      let correct = 0;
+      let wrong = 0;
+      let currentQ = 1;
+      for (const subject in subjects) {
+        subjects[subject].forEach(q => {
+          const radios = document.getElementsByName("q" + currentQ);
+          let selected = "";
+          radios.forEach(r => { if (r.checked) selected = r.value; });
+          if (selected === q[2]) correct++;
+          else wrong++;
+          currentQ++;
         });
-
-        const feedbackDiv = document.getElementById(`feedback${index}`);
-        if (selected === item.answer) {
-          feedbackDiv.textContent = "✅ Correct!";
-          feedbackDiv.className = "feedback correct";
-          playSound("correct");
-          score++;
-        } else {
-          feedbackDiv.textContent = `❌ Incorrect! Correct answer: ${item.answer}`;
-          feedbackDiv.className = "feedback incorrect";
-          playSound("incorrect");
-        }
-      });
-
-      const percentage = Math.round((score / questions.length) * 100);
+      }
+      const total = correct + wrong;
+      const percent = Math.round((correct / total) * 100);
       document.getElementById("result").innerHTML = `
-        <hr>
-        <p>You scored ${score} out of ${questions.length}.</p>
-        <p>Percentage: ${percentage}%</p>
+        <table>
+          <tr><th>Total Questions</th><th>Correct</th><th>Wrong</th><th>Percentage</th></tr>
+          <tr><td>${total}</td><td>${correct}</td><td>${wrong}</td><td>${percent}%</td></tr>
+        </table>
       `;
     }
   </script>
