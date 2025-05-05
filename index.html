@@ -3,176 +3,177 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🔥 Super 7th Grade Quiz Challenge 🔥</title>
+  <title>🔥 7th Standard Quiz Challenge 🔥</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
+      background-color: #e0f7fa;
       margin: 0;
-      background: linear-gradient(to bottom right, #e0f7fa, #f1f8e9);
-      overflow-x: hidden;
+      padding: 0;
     }
-    .welcome-screen {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: #000;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      z-index: 1000;
+    .intro {
+      text-align: center;
+      padding: 40px;
+      background: linear-gradient(to right, #42a5f5, #478ed1);
+      color: white;
     }
     .question {
-      margin: 20px;
+      background-color: #fffde7;
+      margin: 15px;
       padding: 15px;
       border-radius: 10px;
-      background-color: #fce4ec;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    .question:nth-child(even) { background-color: #f3e5f5; }
-    h1, h2 { text-align: center; }
+    .question:nth-child(odd) {
+      background-color: #ffe0b2;
+    }
+    .question:nth-child(even) {
+      background-color: #e1f5fe;
+    }
     .submit-btn {
-      display: block;
-      margin: 20px auto;
+      margin: 20px 10px;
       padding: 10px 20px;
-      background-color: #388e3c;
-      color: #fff;
+      font-size: 18px;
+      background-color: #66bb6a;
+      color: white;
       border: none;
       border-radius: 5px;
-      font-size: 18px;
       cursor: pointer;
     }
-    .result-area {
-      text-align: center;
-      margin: 30px;
+    .submit-btn:hover {
+      background-color: #43a047;
     }
-    .correct-answer {
-      color: green;
-      font-weight: bold;
-    }
-    .wrong-answer {
-      color: red;
-      font-weight: bold;
-    }
-    canvas {
+    #fireworks {
       position: fixed;
       top: 0;
       left: 0;
-      z-index: 999;
-      pointer-events: none;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0,0,0,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      color: white;
+      font-size: 3em;
+      flex-direction: column;
+      display: none;
+      animation: fadeout 3s forwards 2s;
+    }
+    @keyframes fadeout {
+      to { opacity: 0; visibility: hidden; }
+    }
+    #result {
+      padding: 20px;
+      display: none;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid #333;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-<div class="welcome-screen" id="welcome">
-  <h1>🎯 Welcome to the Super 7th Grade Quiz Challenge 🎯</h1>
-  <button onclick="startQuiz()" class="submit-btn">🚀 Start Quiz</button>
-</div>
+  <div class="intro">
+    <h1>🎓 Welcome to the 7th Standard Quiz Mega Challenge 🎓</h1>
+    <p>Let's test your knowledge in fun and exciting ways!</p>
+  </div>
 
-<canvas id="fireworks"></canvas>
+  <form id="quizForm">
+    <div id="quiz-container"></div>
+    <button type="button" onclick="submitQuiz()" class="submit-btn">🎯 Submit</button>
+    <button type="reset" class="submit-btn" style="background-color:#ef5350;">🔄 Reset</button>
+  </form>
 
-<form id="quizForm" style="display:none;">
-  <h2>Let the Challenge Begin!</h2>
-  <div id="quiz-container"></div>
-  <button type="button" onclick="submitQuiz()" class="submit-btn">🎉 Submit</button>
-</form>
+  <div id="fireworks">
+    🎆 BOOM! 🎆<br>
+    Great job!
+  </div>
 
-<div id="result" class="result-area"></div>
-<audio id="celebrateSound" src="https://www.soundjay.com/human/applause-01.mp3"></audio>
+  <div id="result"></div>
 
-<script>
-const questions = [
-  ["🧪 What is the chemical symbol for Gold?", ["Au", "Ag", "Gd", "Pb"], "Au"],
-  ["📐 How many degrees are in a triangle?", ["180", "360", "90", "270"], "180"],
-  ["🌎 Which planet is known as the Red Planet?", ["Venus", "Mars", "Saturn", "Jupiter"], "Mars"],
-  ["😂 What does 'LOL' stand for?", ["Lots of Luck", "Laugh Out Loud", "Love of Life", "Look Out Laugh"], "Laugh Out Loud"],
-  ["🔢 What is the square root of 144?", ["12", "14", "10", "11"], "12"],
-  ["📚 Which author wrote 'Oliver Twist'?", ["J.K. Rowling", "Charles Dickens", "Jane Austen", "Roald Dahl"], "Charles Dickens"],
-  ["💻 What does CPU stand for?", ["Central Processing Unit", "Control Panel Unit", "Computer Power Unit", "Central Program Unit"], "Central Processing Unit"],
-  ["🍕 Which Italian food is flat and round with toppings?", ["Pasta", "Pizza", "Lasagna", "Risotto"], "Pizza"],
-  ["🌉 Which famous bridge is in San Francisco?", ["London Bridge", "Golden Gate Bridge", "Brooklyn Bridge", "Tower Bridge"], "Golden Gate Bridge"],
-  ["🎬 Which movie features a wizard boy named Harry?", ["Star Wars", "Harry Potter", "Avengers", "Frozen"], "Harry Potter"],
-  ["🌧️ What do we call water falling from clouds?", ["Rain", "Fog", "Snow", "Hail"], "Rain"],
-  ["🧠 What organ controls your body?", ["Lungs", "Heart", "Brain", "Kidneys"], "Brain"],
-  ["🎨 What do you call someone who paints?", ["Musician", "Writer", "Artist", "Dancer"], "Artist"],
-  ["👟 Which brand has a swoosh logo?", ["Adidas", "Nike", "Puma", "Reebok"], "Nike"],
-  ["🏰 Where is the Eiffel Tower located?", ["Rome", "Paris", "London", "Berlin"], "Paris"]
-];
+  <audio id="cheerSound">
+    <source src="https://www.soundjay.com/human/cheering-01.mp3" type="audio/mpeg">
+  </audio>
 
-function startQuiz() {
-  document.getElementById('welcome').style.display = 'none';
-  document.getElementById('quizForm').style.display = 'block';
-  const container = document.getElementById("quiz-container");
-  questions.forEach((q, index) => {
-    const options = q[1].map(opt => `<label><input type="radio" name="q${index}" value="${opt}"> ${opt}</label><br>`).join('');
-    container.innerHTML += `
-      <div class="question" id="question${index}">
-        <p><strong>Q${index+1}:</strong> ${q[0]}</p>
-        ${options}
-      </div>
-    `;
-  });
-}
+  <script>
+    const questions = [
+      ["🧮 What is 25 x 4?", ["50", "75", "100", "200"], "100"],
+      ["📏 How many millimeters in a meter?", ["100", "1000", "10", "500"], "1000"],
+      ["🇬🇧 What's the capital of the UK?", ["Manchester", "London", "Birmingham", "Liverpool"], "London"],
+      ["🏞️ Which park is in Wembley?", ["Hyde Park", "Barham Park", "Regents Park", "Greenwich Park"], "Barham Park"],
+      ["✍️ Who wrote 'Macbeth'?", ["Charles Dickens", "William Shakespeare", "Jane Austen", "Roald Dahl"], "William Shakespeare"],
+      ["💻 What does CPU stand for?", ["Central Performance Unit", "Computer Processing Unit", "Central Processing Unit", "Control Processor Unit"], "Central Processing Unit"],
+      ["🏥 Where does Mum work?", ["Northwick Park", "Ealing Hospital", "Brent Council", "Tesco"], "Northwick Park"],
+      ["😂 What's 2 + 2 (Funny Q)?", ["22", "2", "Fish", "4"], "4"],
+      ["🔢 What is the square root of 64?", ["6", "8", "10", "12"], "8"],
+      ["🚌 Which bus goes to Barham Park?", ["204", "H17", "182", "245"], "204"],
+      ["🎨 What color do you get mixing red and white?", ["Pink", "Purple", "Orange", "Grey"], "Pink"],
+      ["🏫 What is your school's name?", ["Preston Primary", "Sudbury High", "Park View", "Wembley Primary"], "Preston Primary"],
+      ["🤣 What color is an orange (Funny)?", ["Green", "Orange", "Blue", "Banana"], "Orange"],
+      ["🌍 What is the largest continent?", ["Europe", "Asia", "Africa", "Antarctica"], "Asia"],
+      ["📚 Who is the author of 'Harry Potter'?", ["Enid Blyton", "J.K. Rowling", "C.S. Lewis", "Roald Dahl"], "J.K. Rowling"],
+      ["🎥 What is YouTube mainly used for?", ["Shopping", "Video Sharing", "Cooking", "Gaming"], "Video Sharing"],
+      ["🏞️ Which town is next to Wembley?", ["Harrow", "Camden", "Croydon", "Barking"], "Harrow"],
+      ["🔢 What's 144 divided by 12?", ["11", "12", "13", "14"], "12"],
+      ["🧑‍⚕️ What does NHS stand for?", ["National Healthcare System", "National Health Service", "Nurses Helping Society", "New Hospital Sector"], "National Health Service"],
+      ["🐱 What sound does a cat make? (Funny)", ["Woof", "Quack", "Meow", "Moo"], "Meow"]
+    ];
 
-function submitQuiz() {
-  let correct = 0;
-  questions.forEach((q, index) => {
-    const radios = document.getElementsByName("q" + index);
-    let selected = "";
-    radios.forEach(r => { if (r.checked) selected = r.value; });
-    const resultText = document.createElement("p");
-    if (selected === q[2]) {
-      correct++;
-      resultText.innerHTML = "✅ Correct!";
-      resultText.classList.add("correct-answer");
-    } else {
-      resultText.innerHTML = `❌ Incorrect! Correct answer: ${q[2]}`;
-      resultText.classList.add("wrong-answer");
+    const container = document.getElementById("quiz-container");
+    questions.forEach((q, index) => {
+      const qHTML = `
+        <div class="question">
+          <p><strong>Q${index + 1}: ${q[0]}</strong></p>
+          ${q[1].map(opt => `<label><input type="radio" name="q${index}" value="${opt}"> ${opt}</label><br>`).join('')}
+          <p id="feedback${index}"></p>
+        </div>
+      `;
+      container.innerHTML += qHTML;
+    });
+
+    function submitQuiz() {
+      let correct = 0;
+      let wrong = 0;
+      const cheer = document.getElementById("cheerSound");
+      for (let i = 0; i < questions.length; i++) {
+        const options = document.getElementsByName("q" + i);
+        let selected = "";
+        for (const o of options) {
+          if (o.checked) selected = o.value;
+        }
+        const feedback = document.getElementById("feedback" + i);
+        if (selected === questions[i][2]) {
+          feedback.innerHTML = "✅ Correct";
+          correct++;
+        } else {
+          feedback.innerHTML = "❌ Incorrect";
+          wrong++;
+        }
+      }
+      document.getElementById("fireworks").style.display = "flex";
+      cheer.play();
+      setTimeout(() => {
+        document.getElementById("fireworks").style.display = "none";
+        document.getElementById("result").style.display = "block";
+      }, 3500);
+      const total = correct + wrong;
+      const percent = Math.round((correct / total) * 100);
+      document.getElementById("result").innerHTML = `
+        <h2>🎓 Final Score</h2>
+        <table>
+          <tr><th>Total</th><th>Correct</th><th>Wrong</th><th>%</th></tr>
+          <tr><td>${total}</td><td>${correct}</td><td>${wrong}</td><td>${percent}%</td></tr>
+        </table>
+      `;
     }
-    document.getElementById("question" + index).appendChild(resultText);
-  });
-  const percent = Math.round((correct / questions.length) * 100);
-  document.getElementById("result").innerHTML = `<h2>Your Score: ${correct}/${questions.length} (${percent}%)</h2>`;
-  document.getElementById("celebrateSound").play();
-  launchFireworks();
-}
-
-function launchFireworks() {
-  const canvas = document.getElementById('fireworks');
-  const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  const particles = [];
-  for (let i = 0; i < 100; i++) {
-    particles.push({
-      x: canvas.width / 2,
-      y: canvas.height / 2,
-      speed: Math.random() * 5 + 2,
-      angle: Math.random() * 2 * Math.PI,
-      radius: Math.random() * 3 + 2,
-      color: `hsl(${Math.random() * 360}, 100%, 50%)`
-    });
-  }
-  let frame = 0;
-  function draw() {
-    if (frame++ > 100) return;
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => {
-      const vx = Math.cos(p.angle) * p.speed;
-      const vy = Math.sin(p.angle) * p.speed;
-      p.x += vx;
-      p.y += vy;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-      ctx.fillStyle = p.color;
-      ctx.fill();
-    });
-    requestAnimationFrame(draw);
-  }
-  draw();
-}
-</script>
+  </script>
 </body>
 </html>
