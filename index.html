@@ -11,7 +11,7 @@
       margin: 0;
       padding: 0;
     }
-    .intro {
+    .intro, .welcome-screen {
       text-align: center;
       padding: 40px;
       background: linear-gradient(to right, #42a5f5, #478ed1);
@@ -58,10 +58,6 @@
       font-size: 3em;
       flex-direction: column;
       display: none;
-      animation: fadeout 3s forwards 2s;
-    }
-    @keyframes fadeout {
-      to { opacity: 0; visibility: hidden; }
     }
     #result {
       padding: 20px;
@@ -82,10 +78,28 @@
       border: 2px solid red;
       background-color: #ffebee !important;
     }
+    #startBtn {
+      padding: 15px 25px;
+      font-size: 20px;
+      background-color: #00bcd4;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #quiz-container, form {
+      display: none;
+    }
   </style>
 </head>
 <body>
-  <div class="intro">
+  <div class="welcome-screen" id="welcomeScreen">
+    <h1>👋 Welcome to the Ultimate 7th Grade Quiz!</h1>
+    <p>Test your skills, have fun, and learn new things! 🧠🎉</p>
+    <button id="startBtn" onclick="startQuiz()">🚀 Start Quiz</button>
+  </div>
+
+  <div class="intro" id="quizIntro">
     <h1>🎓 Welcome to the 7th Standard Quiz Mega Challenge 🎓</h1>
     <p>Let's test your knowledge in fun and exciting ways!</p>
   </div>
@@ -106,10 +120,16 @@
   <audio id="cheerSound">
     <source src="https://www.soundjay.com/human/cheering-01.mp3" type="audio/mpeg">
   </audio>
+  <audio id="correctSound">
+    <source src="https://www.soundjay.com/button/beep-07.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="incorrectSound">
+    <source src="https://www.soundjay.com/button/beep-05.mp3" type="audio/mpeg">
+  </audio>
 
   <script>
     const questions = [
-      ["🧮 What is 25 x 4?", ["50", "75", "100", "200"], "100"],
+      ["🧮 What is 25 x 10?", ["50", "75", "100", "250"], "100"],
       ["📏 How many millimeters in a meter?", ["100", "1000", "10", "500"], "1000"],
       ["🇬🇧 What's the capital of the UK?", ["Manchester", "London", "Birmingham", "Liverpool"], "London"],
       ["🏞️ Which park is in Wembley?", ["Hyde Park", "Barham Park", "Regents Park", "Greenwich Park"], "Barham Park"],
@@ -120,7 +140,7 @@
       ["🔢 What is the square root of 64?", ["6", "8", "10", "12"], "8"],
       ["🚌 Which bus goes to Barham Park?", ["204", "H17", "182", "245"], "204"],
       ["🎨 What color do you get mixing red and white?", ["Pink", "Purple", "Orange", "Grey"], "Pink"],
-      ["🏫 What is your school's name?", ["Preston Primary", "Sudbury High", "Park View", "Wembley Primary"], "Preston Primary"],
+      ["🏫 What is your school's name?", ["Preston Park Primary", "Sudbury High", "Park View", "Wembley Primary"], "Preston Park Primary"],
       ["🤣 What color is an orange (Funny)?", ["Green", "Orange", "Blue", "Banana"], "Orange"],
       ["🌍 What is the largest continent?", ["Europe", "Asia", "Africa", "Antarctica"], "Asia"],
       ["📚 Who is the author of 'Harry Potter'?", ["Enid Blyton", "J.K. Rowling", "C.S. Lewis", "Roald Dahl"], "J.K. Rowling"],
@@ -132,16 +152,31 @@
     ];
 
     const container = document.getElementById("quiz-container");
+    const correctSound = document.getElementById("correctSound");
+    const incorrectSound = document.getElementById("incorrectSound");
+
     questions.forEach((q, index) => {
       const qHTML = `
         <div class="question" id="question${index}">
           <p><strong>Q${index + 1}: ${q[0]}</strong></p>
-          ${q[1].map(opt => `<label><input type="radio" name="q${index}" value="${opt}"> ${opt}</label><br>`).join('')}
+          ${q[1].map(opt => `<label><input type="radio" name="q${index}" value="${opt}" onclick="playSound(${index}, '${opt}')"> ${opt}</label><br>`).join('')}
           <p id="feedback${index}"></p>
         </div>
       `;
       container.innerHTML += qHTML;
     });
+
+    function startQuiz() {
+      document.getElementById("welcomeScreen").style.display = "none";
+      document.getElementById("quizIntro").style.display = "block";
+      document.getElementById("quizForm").style.display = "block";
+    }
+
+    function playSound(index, value) {
+      const isCorrect = value === questions[index][2];
+      if (isCorrect) correctSound.play();
+      else incorrectSound.play();
+    }
 
     function submitQuiz() {
       let correct = 0;
@@ -170,7 +205,7 @@
       setTimeout(() => {
         document.getElementById("fireworks").style.display = "none";
         document.getElementById("result").style.display = "block";
-      }, 3500);
+      }, 4000);
       const total = correct + wrong;
       const percent = Math.round((correct / total) * 100);
       document.getElementById("result").innerHTML = `
