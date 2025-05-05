@@ -78,6 +78,10 @@
       padding: 10px;
       text-align: center;
     }
+    .highlight {
+      border: 2px solid red;
+      background-color: #ffebee !important;
+    }
   </style>
 </head>
 <body>
@@ -130,7 +134,7 @@
     const container = document.getElementById("quiz-container");
     questions.forEach((q, index) => {
       const qHTML = `
-        <div class="question">
+        <div class="question" id="question${index}">
           <p><strong>Q${index + 1}: ${q[0]}</strong></p>
           ${q[1].map(opt => `<label><input type="radio" name="q${index}" value="${opt}"> ${opt}</label><br>`).join('')}
           <p id="feedback${index}"></p>
@@ -150,11 +154,14 @@
           if (o.checked) selected = o.value;
         }
         const feedback = document.getElementById("feedback" + i);
+        const qBlock = document.getElementById("question" + i);
         if (selected === questions[i][2]) {
           feedback.innerHTML = "✅ Correct";
+          qBlock.classList.remove("highlight");
           correct++;
         } else {
           feedback.innerHTML = "❌ Incorrect";
+          qBlock.classList.add("highlight");
           wrong++;
         }
       }
